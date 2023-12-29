@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import gsap from 'gsap';
 
 const scene = new THREE.Scene();
 
@@ -98,4 +99,45 @@ const renderer = new THREE.WebGLRenderer({
 
 renderer.setSize(sizes.width, sizes.height);
 
-renderer.render(scene, camera);
+// Vanilla JS way to adapt the animation to the frame rate 
+//let time = Date.now();
+
+const clock = new THREE.Clock();
+
+const tick = () => {
+    /*
+    // This is the logic you need to perform to now the delta time
+    // deltaTime is the time between two frames
+    // Time
+    // 1. Get the current time
+    const currentTime = Date.now();
+    // 2. Get the delta time
+    const deltaTime = currentTime - time;
+    // 3. Update time
+    time = currentTime;
+
+    Now you can use the deltaTime to update the rotation of the meshes
+    like this:
+    sphere.rotation.y += 0.01 * deltaTime;
+    */
+
+    const elapsedTime = clock.getElapsedTime();
+
+    // Update meshes y rotation
+    sphere.position.x = Math.cos(elapsedTime);
+    sphere.position.y = Math.sin(elapsedTime);
+    box.rotation.y = elapsedTime;
+    box1.rotation.y = elapsedTime;
+    gsap.to(box.position, { duration: 1, delay: 1, x: Math.cos(elapsedTime), y: Math.sin(elapsedTime)})
+
+
+    // Update camera
+    camera.position.x = Math.cos(elapsedTime);
+    camera.position.y = Math.sin(elapsedTime);;
+    camera.lookAt(group.position);
+
+    renderer.render(scene, camera);
+    window.requestAnimationFrame(tick);
+}
+
+tick();
